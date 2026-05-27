@@ -6,15 +6,15 @@ PREVIOUS_PRICE = None
 URL_BINANCE = "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
 URL_DISCORD_WEBHOOK = "https://discordapp.com/api/webhooks/1509165941483900968/PV5nIh6U0waMWVOPfrn28O9pGC66mKGQEMY5EryreMtjRhEN3qPDPDftcKmOPr2ECQX8"
 
-def enviar_mensagem_discord(conteudo):
+def send_message_to_discord(content):
     
-    data = {"content": conteudo}
+    data = {"content": content}
     try:
-        resposta = requests.post(URL_DISCORD_WEBHOOK, json=data)
-        if resposta.status_code == 204:
+        response = requests.post(URL_DISCORD_WEBHOOK, json=data)
+        if response.status_code == 204:
             print("Alerta enviado com sucesso para o Discord!")
         else:
-            print(f"Erro ao enviar para o Discord: {resposta.status_code}")
+            print(f"Erro ao enviar para o Discord: {response.status_code}")
     except Exception as e:
         print(f"Falha na rede ao tentar avisar o Discord: {e}")
 
@@ -29,14 +29,23 @@ def monitorate_bitcoin():
         print(f"Preço atual do bitcoin: {current_price}")
         print(f"Símbolo: {bitcoin_symbol}")
 
+        if PREVIOUS_PRICE is None:
+            PREVIOUS_PRICE = current_price
+            print("Preço inicial guardado. Aguardando a próxima checagem...")
+            return
+
         difference = current_price - PREVIOUS_PRICE
 
         if difference > 0:
             mensagem = f"🟩 **Subiu!** BTC: **${current_price:,.2f}** (+${difference:,.2f})"
-            enviar_mensagem_discord(mensagem)
+            send_message_to_discord(mensagem)
         elif difference < 0:
             mensagem = f"🟩 **Desceu!** BTC: **${current_price:,.2f}** (+${difference:,.2f})"
-            enviar_mensagem_discord(mensagem)    
+            send_message_to_discord(mensagem) 
+        else:
+            print("O preço não mudou desde o último minuto.")
+
+        PREVIOUS_PRICE = current_price           
 
     except Exception as e:
         print(f"Erro ao conectar na API da Binance: {e}")   
