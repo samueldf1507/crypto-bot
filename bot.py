@@ -31,7 +31,6 @@ def monitorate_bitcoin():
 
         if PREVIOUS_PRICE is None:
             PREVIOUS_PRICE = current_price
-            print("Preço inicial guardado. Aguardando a próxima checagem...")
             return
 
         difference = current_price - PREVIOUS_PRICE
@@ -40,7 +39,7 @@ def monitorate_bitcoin():
             mensagem = f"🟩 **Subiu!** BTC: **${current_price:,.2f}** (+${difference:,.2f})"
             send_message_to_discord(mensagem)
         elif difference < 0:
-            mensagem = f"🟩 **Desceu!** BTC: **${current_price:,.2f}** (+${difference:,.2f})"
+            mensagem = f"\U0001F7E5 **Desceu!** BTC: **${current_price:,.2f}** (+${difference:,.2f})"
             send_message_to_discord(mensagem) 
         else:
             print("O preço não mudou desde o último minuto.")
